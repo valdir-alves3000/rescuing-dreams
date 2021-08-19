@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "rescuing-dreams-expo",
-    "slug": "rescuing-dreams-expo",
+    "name": "rescuing-dreams",
+    "slug": "rescuing-dreams",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
