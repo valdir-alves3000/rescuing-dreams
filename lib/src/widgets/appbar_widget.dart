@@ -24,7 +24,10 @@ class AppBarWidget extends StatelessWidget {
       title: Text(
         'Entre com o destino',
         style: TextStyle(
-            fontSize: 18.0, color: Colors.black, fontFamily: 'Brand Bold'),
+          fontSize: 18.0,
+          color: Colors.black,
+          fontFamily: 'Brand Bold',
+        ),
       ),
       backgroundColor: Colors.white,
       leading: IconButton(
@@ -67,6 +70,4 @@ class AppBarWidget extends StatelessWidget {
       ),
     );
   }
-
-  originPlaces() {}
 }

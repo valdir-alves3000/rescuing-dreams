@@ -14,7 +14,7 @@ class AddressController extends GetxController {
     addressApi.placeIdAddress(placeId).asStream().listen((event) {
       if (event != null) {
         addressList = event;
-        guinchosController.getPositionDestination(addressList);
+        // guinchosController.getPositionDestination(addressList);
       }
     });
   }

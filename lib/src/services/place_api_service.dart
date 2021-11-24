@@ -14,7 +14,7 @@ class PlaceApiService {
   Future<List<PlacesModel>?> searchPredictions(String input) async {
     try {
       final response = await Dio().get(
-          'https://maps.googleapis.com/maps/api/place/autocomplete/json',
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json",
           queryParameters: {
             "input": input,
             "key": googleAPIKey,

@@ -35,8 +35,16 @@ class DraggableWidget extends StatelessWidget {
             onTap: onTap,
             child: SearchButtonWidget(),
           ),
-          ListTileWidget('Enter home location', Icons.home),
-          ListTileWidget('Enter work location', Icons.work),
+          ListTileWidget(
+            head: 'Enter home location',
+            icon: Icons.home,
+            onTap: () {},
+          ),
+          ListTileWidget(
+            head: 'Enter work location',
+            icon: Icons.work,
+            onTap: () {},
+          ),
         ],
       ),
     );

@@ -10,15 +10,4 @@ class AddressModel {
     required this.latitude,
     required this.longitude,
   });
-/*
-  static AddressModel fromMap(Map<String, dynamic> map) {
-   
-    return AddressModel(
-      placeId: map['place_id'],
-      placeName: map['name'],
-      latitude: map['geometry']['location']['lat'],
-      longitude: map['geometry']['location']['lng'],
-    );
-  }
-  */
 }

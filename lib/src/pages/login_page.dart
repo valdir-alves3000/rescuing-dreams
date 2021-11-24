@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 15, 0, 10),
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
                 child: SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(20.0),
                 child: RichText(
                   text: TextSpan(
                       text: "Não tem conta? ",

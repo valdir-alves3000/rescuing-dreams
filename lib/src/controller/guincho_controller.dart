@@ -10,9 +10,6 @@ class MarkersGuinchoController extends GetxController {
   final markers = Set<Marker>();
 
   loadMarkersGuinchos() async {
-    print('Markers inicial: ');
-    print(markers);
-
     //FirebaseFirestore db = DB.get();
     //final guinchos = await db.collection('guinchos').get();
     final guinchos = GuinchosRepository().Guinchos;
@@ -31,7 +28,5 @@ class MarkersGuinchoController extends GetxController {
       );
     });
     update();
-    print('Markers loading: ');
-    print(markers);
   }
 }

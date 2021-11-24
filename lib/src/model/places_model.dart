@@ -12,12 +12,11 @@ class PlacesModel {
   });
 
   static PlacesModel fromMap(Map<String, dynamic> map) {
-        
     return PlacesModel(
       description: map['description'],
       placeId: map['place_id'],
       mainText: map['structured_formatting']['main_text'],
       secondaryText: map['structured_formatting']['secondary_text'],
-      );
+    );
   }
 }

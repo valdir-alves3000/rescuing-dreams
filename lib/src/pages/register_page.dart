@@ -4,7 +4,6 @@ import 'package:rescuing_dreams/src/blocs/auth_bloc.dart';
 import 'package:rescuing_dreams/src/resources/dialog/loading_dialog.dart';
 import 'package:rescuing_dreams/src/resources/dialog/msg_dialog.dart';
 
-
 class RegisterPage extends StatefulWidget {
   static const String idPage = '/register';
   @override
@@ -24,7 +23,6 @@ class _RegisterPageState extends State<RegisterPage> {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     return Scaffold(
-  
       body: Container(
         height: _height,
         width: _width,
@@ -53,7 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                   child: StreamBuilder(
-                      // stream: authBloc.nameStream,
+                      stream: authBloc.nameStream,
                       builder: (context, snapshot) => TextField(
                             controller: _nameController,
                             style: TextStyle(fontSize: 16, color: Colors.black),
@@ -64,7 +62,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 labelText: "Name",
                                 prefixIcon: Container(
                                     width: 50,
-                                    child: Image.asset("assets/images/ic_user.png")),
+                                    child: Image.asset(
+                                        "assets/images/ic_user.png")),
                                 border: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Color(0xffCED0D2), width: 1),
@@ -74,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: StreamBuilder(
-                    // stream: authBloc.phoneStream,
+                    stream: authBloc.phoneStream,
                     builder: (context, snapshot) => TextField(
                           controller: _phoneController,
                           style: TextStyle(fontSize: 16, color: Colors.black),
@@ -85,7 +84,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               labelText: "Phone Number",
                               prefixIcon: Container(
                                   width: 50,
-                                  child: Image.asset("assets/images/ic_phone.png")),
+                                  child: Image.asset(
+                                      "assets/images/ic_phone.png")),
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: Color(0xffCED0D2), width: 1),
@@ -96,7 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                   child: StreamBuilder(
-                      // stream: authBloc.emailStream,
+                      stream: authBloc.emailStream,
                       builder: (context, snapshot) => TextField(
                             controller: _emailController,
                             style: TextStyle(fontSize: 16, color: Colors.black),
@@ -107,7 +107,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 labelText: "Email",
                                 prefixIcon: Container(
                                     width: 50,
-                                    child: Image.asset("assets/images/email.png")),
+                                    child:
+                                        Image.asset("assets/images/email.png")),
                                 border: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Color(0xffCED0D2), width: 1),
@@ -117,7 +118,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: StreamBuilder(
-                    // stream: authBloc.passStream,
+                    stream: authBloc.passStream,
                     builder: (context, snapshot) => TextField(
                           controller: _passController,
                           obscureText: true,
@@ -129,7 +130,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               labelText: "Password",
                               prefixIcon: Container(
                                   width: 50,
-                                  child: Image.asset("assets/images/ic_lock.png")),
+                                  child:
+                                      Image.asset("assets/images/ic_lock.png")),
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: Color(0xffCED0D2), width: 1),
@@ -155,8 +157,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       )),
                     ),
                     style: ElevatedButton.styleFrom(
-                         primary: Colors.indigo[300],
-                        elevation: 3,                        
+                        primary: Colors.indigo[300],
+                        elevation: 3,
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(24)),
                         textStyle: TextStyle(
@@ -203,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
       authBloc.signUp(_nameController.text, _emailController.text,
           _passController.text, _phoneController.text, () {
         LoadingDialog.hideLoadingDialog(context);
-        Navigator.pushNamed(context, '/homePage');
+        Navigator.pushNamed(context, '/login');
       }, (msg) {
         LoadingDialog.hideLoadingDialog(context);
         MsgDialog.showMsgDialog(context, "Sign Up", msg);

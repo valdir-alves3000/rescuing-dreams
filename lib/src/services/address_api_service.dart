@@ -7,7 +7,7 @@ class AddressApiService {
   static AddressApiService get instance => AddressApiService._internal();
   // final Dio _dio = Dio();
 
-  Future placeIdAddress(String placeId) async {
+  placeIdAddress(String placeId) async {
     try {
       final response = await Dio().get(
           'https://maps.googleapis.com/maps/api/place/details/json',

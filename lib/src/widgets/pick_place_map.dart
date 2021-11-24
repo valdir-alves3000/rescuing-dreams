@@ -21,7 +21,10 @@ class PickPlaceMap extends StatelessWidget {
             color: Colors.grey,
           ),
           SizedBox(width: 10.0),
-          Text('Choose on map',style: TextStyle(fontSize: 15.5,fontWeight: FontWeight.w500),),
+          Text(
+            'Choose on map',
+            style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w500),
+          ),
         ],
       ),
     );

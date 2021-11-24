@@ -26,14 +26,11 @@ class _MyAppState extends State<MyApp> {
         primaryColor: Colors.indigo[300],
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: MapPage.idPage,
+      initialRoute: LoginPage.idPage,
       routes: {
-        // AnimatedPage.idPage:(context)=>AnimatedPage(),
         MapPage.idPage: (context) => MapPage(),
         LoginPage.idPage: (context) => LoginPage(),
-
-        RegisterPage.idPage:(context)=>RegisterPage(),
-        //SearchPage.idPage:(context)=>SearchPage(),
+        RegisterPage.idPage: (context) => RegisterPage(),
       },
       debugShowCheckedModeBanner: false,
     );

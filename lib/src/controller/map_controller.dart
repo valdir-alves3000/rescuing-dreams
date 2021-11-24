@@ -1,93 +1,118 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rescuing_dreams/src/controller/guincho_controller.dart';
-import 'package:rescuing_dreams/src/model/address_model.dart';
-import 'package:rescuing_dreams/src/model/directions_model.dart';
+import 'package:rescuing_dreams/src/fire_base/fire_base_auth.dart';
+import 'package:rescuing_dreams/src/model/directions.dart';
+import 'package:rescuing_dreams/src/repositories/MechanicsRepository.dart';
+import 'package:rescuing_dreams/src/repositories/directions_repository.dart';
 import 'package:rescuing_dreams/src/repositories/guincho_repositiry.dart';
-import 'package:rescuing_dreams/src/config/.env.dart';
-import 'package:rescuing_dreams/src/resources/dialog/loading_dialog.dart';
-import 'package:rescuing_dreams/src/services/directions_api_service.dart';
 
 class MapController extends GetxController {
-  Set<Polyline> polylineSet = {};
-  List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints = PolylinePoints();
-
+  FirAuth _firAuth = FirAuth();
   final latitude = 0.0.obs;
   final longitude = 0.0.obs;
-  final raio = 0.0.obs;
 
   late StreamSubscription<Position> positionStream;
   LatLng _position = LatLng(-23.6494827, -46.4475031);
-  final LatLng _destination = LatLng(-23.64762586916668, -46.44306130707264);
-
+  LatLng _destination = LatLng(-23.6494827, -46.4475031);
   late GoogleMapController _mapsController;
   final markers = Set<Marker>();
+  List<LatLng> polylineCoordinates = [];
 
-  MapController get to => Get.find<MapController>();
-  DirectionsApiService directionsApiService = DirectionsApiService.instance;
+  var data;
 
+  static MapController get to => Get.find<MapController>();
   get mapsController => _mapsController;
   get position => _position;
   get destination => _destination;
 
-  String get distancia => raio.value < 1
-      ? '${(raio.value * 1000).toStringAsFixed(0)} m'
-      : '${(raio.value).toStringAsFixed(1)} Km';
-
-  filtrarGuincho() {
-    Get.back();
-  }
-
-  onMapCreated(GoogleMapController gmc) async {
+  onMapCreated(GoogleMapController gmc) {
     _mapsController = gmc;
-    //getPosicao();
-    watchPosicao();
-    loadMarkersGuinchos();
+    watchPosition();
+    getPosition();
+    loadGuinchos();
   }
 
-  loadMarkersGuinchos() async {
+  updateCamera() {
+    _mapsController.animateCamera(
+      data != null
+          ? CameraUpdate.newLatLngBounds(data.bounds, 110.0)
+          : CameraUpdate.newCameraPosition(CameraPosition(
+              target: position,
+              zoom: 15,
+            )),
+    );
+  }
+
+  setPolyline(LatLng pos) async {
+    Directions? directions = await DirectionsRepository()
+        .getDirections(origin: position, destination: pos);
+
+    if (directions != null) {
+      data = directions;
+      polylineCoordinates.clear();
+      data.polylinePoints.forEach((pointLatLng) {
+        polylineCoordinates
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+    markers.clear();
+    markers.add(
+      Marker(
+        markerId: const MarkerId('destination'),
+        infoWindow: const InfoWindow(title: 'Destination'),
+        icon: BitmapDescriptor.defaultMarker,
+        position: pos,
+      ),
+    );
+    loadMechanics();
+    update();
+    updateCamera();
+  }
+
+  loadGuinchos() async {
     //FirebaseFirestore db = DB.get();
     //final guinchos = await db.collection('guinchos').get();
     final guinchos = GuinchosRepository().Guinchos;
-    guinchos.forEach((guincho) async {
-      markers.add(
-        Marker(
-          markerId: MarkerId(guincho.nome),
-          position: LatLng(guincho.latitude, guincho.longitude),
-          infoWindow: InfoWindow(title: guincho.nome),
-          onTap: () => {},
-          icon: await BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(),
-            'assets/images/tow-truck.png',
-          ),
+    String icon = 'assets/images/tow-truck.png';
+    guinchos.forEach((guincho) => addMarker(guincho, icon));
+  }
+
+  loadMechanics() {
+    String icon = 'assets/images/mechanic.png';
+    final mecanics = MechanicsRepository().Mechanics;
+    mecanics.forEach((mecanic) => addMarker(mecanic, icon));
+  }
+
+  addMarker(marker, icon) async {
+    markers.add(
+      Marker(
+        markerId: MarkerId(marker.nome),
+        position: LatLng(marker.latitude, marker.longitude),
+        infoWindow: InfoWindow(title: marker.nome),
+        onTap: () => {},
+        icon: await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(),
+          icon,
         ),
-      );
-    });
+      ),
+    );
     update();
   }
 
-  watchPosicao() async {
+  watchPosition() async {
     positionStream = Geolocator.getPositionStream().listen((Position position) {
-      // ignore: unnecessary_null_comparison
-      if (position == null) {
-        latitude.value = position.latitude;
-        longitude.value = position.longitude;
-      }
+      latitude.value = position.latitude;
+      longitude.value = position.longitude;
+      _position = LatLng(position.latitude, position.longitude);
+      _destination = LatLng(position.latitude, position.longitude);
     });
   }
 
-  @override
-  void onClose() {
-    positionStream.cancel();
-    super.onClose();
-  }
-
-  Future<Position> _posicaoAtual() async {
+  Future<Position> _currentPosition() async {
     LocationPermission permisssao;
     bool ativado = await Geolocator.isLocationServiceEnabled();
 
@@ -111,11 +136,11 @@ class MapController extends GetxController {
     return await Geolocator.getCurrentPosition();
   }
 
-  getPosicao() async {
+  getPosition() async {
     try {
-      final posicao = await _posicaoAtual();
-      latitude.value = posicao.latitude;
-      longitude.value = posicao.longitude;
+      final currentPositon = await _currentPosition();
+      latitude.value = currentPositon.latitude;
+      longitude.value = currentPositon.longitude;
 
       _mapsController.animateCamera(
         CameraUpdate.newLatLng(
@@ -133,45 +158,28 @@ class MapController extends GetxController {
     }
   }
 
-  getPositionDestination(AddressModel address) async {
-    try {
-      destination.latitude = address.latitude;
-      destination.longitude = address.longitude;
-    } catch (e) {
-      return null;
-    }
+  calculateFares() {
+    double timeTraveledFare = (data.durationValue / 60 * 0.2);
+    double distanceTraveledFare = (data.distanceValue * 0.0203);
+    double totalFareAmount = 42 + timeTraveledFare + distanceTraveledFare;
+
+    return totalFareAmount.truncate();
   }
 
-  addPolyLine() {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      geodesic: true,
-    );
-    // polylines[id] = polyline;
-  }
-
-  getPolyline(DirectionsModel details) async {
-    print('details: ');
-    print(details);
-    // List<PointLatLng> decodedPolyLinePointsResult = polylinePoints.decodePolyline(details.encodePooints);
-
-    /*
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        googleAPIKey,
-        PointLatLng(_position.latitude, _position.longitude),
-        PointLatLng(_destination.latitude, _destination.longitude),
-        travelMode: TravelMode.driving,
-        wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")]);
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    }
-    addPolyLine();
+  resetData() {
+    polylineCoordinates.clear();
+    markers.clear();
+    data = null;
     update();
-    */
+  }
+
+  void createUserResgate() {
+    _firAuth.createUserResgate(position, destination, () {});
+  }
+
+  @override
+  void onClose() {
+    positionStream.cancel();
+    super.onClose();
   }
 }

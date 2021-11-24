@@ -10,10 +10,15 @@ class DirectionsApiService {
 
   Future placeIdDirections(
       String placeIdOrigin, String placeIdDestination) async {
+    print('place Origin: ');
+    print(placeIdOrigin);
+
+    print('place Destination: ');
+    print(placeIdDestination);
+
     try {
       final response = await Dio().get(
-          "https://maps.googleapis.com/maps/api/directions/json?destination=place_id%3A$placeIdDestination&origin=place_id%3A$placeIdOrigin&key=$googleAPIKey"
-                   );
+          "https://maps.googleapis.com/maps/api/directions/json?destination=place_id%3A$placeIdDestination&origin=place_id%3A$placeIdOrigin&key=$googleAPIKey");
       print('response directions: ');
       print(response.data['routes'][0]);
 
@@ -24,13 +29,12 @@ class DirectionsApiService {
         duractionValue: res['legs'][0]['duration']['value'],
         distanceText: res['legs'][0]['distance']['text'],
         duractionText: res['legs'][0]['duration']['text'],
-        encodePooints: res['overview_polyline']['points'],
+        encodePoints: res['overview_polyline']['points'],
+        bounds: res,
       );
 
       return directionsDetails;
     } catch (e) {
-      print('error directions: ');
-      print(e);
       return null;
     }
   }

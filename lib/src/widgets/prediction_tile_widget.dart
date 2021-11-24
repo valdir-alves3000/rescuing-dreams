@@ -1,30 +1,24 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:rescuing_dreams/src/controller/address_controller.dart';
-import 'package:rescuing_dreams/src/controller/map_controller.dart';
-import 'package:rescuing_dreams/src/model/address_model.dart';
-import 'package:rescuing_dreams/src/model/directions_model.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rescuing_dreams/src/resources/dialog/loading_dialog.dart';
-import 'package:rescuing_dreams/src/services/directions_api_service.dart';
+import 'package:rescuing_dreams/src/services/address_api_service.dart';
 import 'package:rescuing_dreams/src/widgets/divider_widget.dart';
 
 class PredirectionTileWidget extends StatelessWidget {
-  final AddressController addressController = AddressController();
-  final MapController mapController = MapController();
-  final DirectionsApiService directionsApiService =
-      DirectionsApiService.instance;
-  String placeId;
+  AddressApiService addressApiService = AddressApiService.instance;
+
+  String placeIdDestination;
   String mainText;
   String secondaryText;
   Function() onPress;
+  Function(LatLng) setPolyline;
 
   PredirectionTileWidget({
-    required this.placeId,
     required this.mainText,
     required this.secondaryText,
     required this.onPress,
+    required this.placeIdDestination,
+    required this.setPolyline,
   });
 
   @override
@@ -33,11 +27,13 @@ class PredirectionTileWidget extends StatelessWidget {
       style: ElevatedButton.styleFrom(primary: Colors.white),
       onPressed: () async {
         LoadingDialog.showLoadingDialog(context, "Loading...");
-        print(placeId);
-        await addressController.getPlaceAddressDetails(placeId, context);
-        var directionsDetails = await directionsApiService.placeIdDirections(
-            'ChIJlW8enlRpzpQRD9nlNlrDZ5Q', placeId);
-        mapController.getPolyline(directionsDetails);
+        var _destination =
+            await addressApiService.placeIdAddress(placeIdDestination);
+
+        if (_destination != null) {
+          await setPolyline(
+              LatLng(_destination.latitude, _destination.longitude));
+        }
         LoadingDialog.hideLoadingDialog(context);
         onPress();
       },
